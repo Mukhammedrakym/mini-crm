@@ -1,0 +1,11 @@
+.git
+.env
+vendor
+node_modules
+storage
+bootstrap/cache
+public/build
+.idea
+.vscode
+.DS_Store
+phpstan/resultCache.php
