@@ -18,8 +18,6 @@ services:
     working_dir: /var/www
     volumes:
       - ./:/var/www:delegated
-    # если права на файлы будут странные — можно так:
-    # user: "${UID:-1000}:${GID:-1000}"
 
   mysql:
     image: mysql:8.0

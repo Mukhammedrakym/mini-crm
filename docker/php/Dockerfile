@@ -1,6 +1,5 @@
 FROM php:8.4-fpm-bookworm
 
-# системные пакеты для расширений
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git unzip libicu-dev libzip-dev libonig-dev \
     libpng-dev libjpeg62-turbo-dev libfreetype6-dev \
@@ -11,7 +10,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# простые настройки opcache для prod
 RUN { \
       echo "opcache.enable=1"; \
       echo "opcache.enable_cli=1"; \
