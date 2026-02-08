@@ -6,7 +6,7 @@ RUN apt-get update \
     libzip-dev \
     libonig-dev \
     libxml2-dev \
- && docker-php-ext-install pdo_mysql mbstring xml zip \
+ && docker-php-ext-install pdo_mysql mbstring xml zip exif \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
