@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Customer;
+use App\Enums\TicketStatus;
 
 class Ticket extends Model
 {
@@ -17,6 +18,7 @@ class Ticket extends Model
 
     protected $casts = [
         'answered_at' => 'datetime',
+        'status' => TicketStatus::class,
     ];
 
     public function customer()
