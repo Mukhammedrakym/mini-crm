@@ -35,3 +35,9 @@ services:
       PMA_PORT: 3306
     depends_on:
       - mysql
+
+  node:
+    image: node:20-alpine
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
