@@ -12,21 +12,25 @@ class TicketController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Ticket::with('customer')
-            ->latest();
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        $tickets = $query->paginate(10)->withQueryString();
+        $tickets = Ticket::with('customer')
+            ->latest()
+            ->filter($request->only([
+                'status',
+                'date_from',
+                'date_to',
+                'email',
+                'phone',
+            ]))
+            ->paginate(10)
+            ->withQueryString();
 
         return view('admin.tickets.index', [
             'tickets' => $tickets,
             'statuses' => TicketStatus::cases(),
-            'currentStatus' => $request->status,
+            'filters' => $request->all(),
         ]);
     }
+
 
     public function show(Ticket $ticket)
     {

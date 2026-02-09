@@ -5,20 +5,30 @@
 @section('content')
     <h1>Заявки</h1>
 
-    <form method="GET" class="row" style="margin-bottom:12px;">
-        <label class="muted">Статус:</label>
-        <select name="status" onchange="this.form.submit()">
-            <option value="">Все</option>
-            @foreach($statuses as $status)
-                <option value="{{ $status->value }}" @selected($currentStatus === $status->value)>
-                    {{ $status->value }}
-                </option>
-            @endforeach
-        </select>
-        @if($currentStatus)
-            <a href="{{ route('admin.tickets.index') }}" class="muted">сбросить</a>
-        @endif
-    </form>
+    <form method="GET" class="row" style="margin-bottom:12px; flex-wrap:wrap;">
+    <input type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}">
+    <input type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}">
+
+    <input type="text" name="email" placeholder="Email"
+           value="{{ $filters['email'] ?? '' }}">
+
+    <input type="text" name="phone" placeholder="Телефон"
+           value="{{ $filters['phone'] ?? '' }}">
+
+    <select name="status">
+        <option value="">Все</option>
+        @foreach($statuses as $status)
+            <option value="{{ $status->value }}"
+                @selected(($filters['status'] ?? null) === $status->value)>
+                {{ $status->value }}
+            </option>
+        @endforeach
+    </select>
+
+    <button class="btn btn-primary">Фильтр</button>
+
+    <a href="{{ route('admin.tickets.index') }}" class="muted">Сброс</a>
+</form>
 
     <table>
         <thead>
