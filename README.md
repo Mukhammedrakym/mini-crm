@@ -139,10 +139,38 @@ POST /api/tickets
 POST /api/tickets
 ```
 
+Пример запроса (curl):
+```bash
+curl -X POST http://localhost:8080/api/tickets \
+  -H "Accept: application/json" \
+  -F "name=Example Name" \
+  -F "phone=+77777777771" \
+  -F "email=example@test.kz" \
+  -F "subject=Example subject" \
+  -F "message=Example message"
+```
+
 ### Статистика заявок
 
 ```bash
 GET /api/tickets/statistics?period=day|week|month
+```
+
+Пример ответа:
+```bash
+{
+  "data": {
+    "period": "day",
+    "from": "2026-02-09",
+    "to": "2026-02-09",
+    "total": 203,
+    "by_status": {
+      "done": 63,
+      "in_progress": 64,
+      "new": 76
+    }
+  }
+}
 ```
 
 ## Архитектурные решения
