@@ -4,35 +4,40 @@ namespace App\Services;
 
 use App\Models\Ticket;
 use Carbon\Carbon;
+use InvalidArgumentException;
 
 class TicketStatisticsService
 {
-    public function get(): array
+    public function handle(string $period): array
     {
+        $query = Ticket::query();
+
+        $query = match ($period) {
+            'day'   => $query->forDay(),
+            'week'  => $query->forWeek(),
+            'month' => $query->forMonth(),
+            default => throw new InvalidArgumentException('Invalid period'),
+        };
+
         return [
-            'today' => $this->countToday(),
-            'week'  => $this->countThisWeek(),
-            'month' => $this->countThisMonth(),
+            'period' => $period,
+            'from' => $this->fromDate($period),
+            'to' => Carbon::now()->toDateString(),
+            'total' => $query->count(),
+            'by_status' => $query
+                ->select('status')
+                ->selectRaw('COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status'),
         ];
     }
 
-    protected function countToday(): int
+    private function fromDate(string $period): string
     {
-        return Ticket::whereDate('created_at', Carbon::today())->count();
-    }
-
-    protected function countThisWeek(): int
-    {
-        return Ticket::whereBetween('created_at', [
-            Carbon::now()->startOfWeek(),
-            Carbon::now()->endOfWeek(),
-        ])->count();
-    }
-
-    protected function countThisMonth(): int
-    {
-        return Ticket::whereMonth('created_at', Carbon::now()->month)
-            ->whereYear('created_at', Carbon::now()->year)
-            ->count();
+        return match ($period) {
+            'day' => Carbon::today()->toDateString(),
+            'week' => Carbon::now()->startOfWeek()->toDateString(),
+            'month' => Carbon::now()->startOfMonth()->toDateString(),
+        };
     }
 }

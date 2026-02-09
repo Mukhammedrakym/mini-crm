@@ -7,6 +7,7 @@ use App\Models\Ticket;
 use App\Enums\TicketStatus;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class TicketService
 {
@@ -53,5 +54,27 @@ class TicketService
 
             return $ticket;
         });
+    }
+
+    public function paginateForAdmin(array $filters): LengthAwarePaginator
+    {
+        return Ticket::with('customer')
+            ->latest()
+            ->filter($filters)
+            ->paginate(10)
+            ->withQueryString();
+    }
+
+    public function updateStatus(Ticket $ticket, string $status): void
+    {
+        $data = [
+            'status' => $status,
+        ];
+
+        if ($status === TicketStatus::DONE && is_null($ticket->answered_at)) {
+            $data['answered_at'] = now();
+        }
+
+        $ticket->update($data);
     }
 }

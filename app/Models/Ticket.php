@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
 
 class Ticket extends Model implements HasMedia
 {
@@ -54,5 +55,25 @@ class Ticket extends Model implements HasMedia
                     $c->where('phone', 'like', "%{$phone}%")
                 )
             );
+    }
+
+    public function scopeForDay(Builder $query): Builder
+    {
+        return $query->whereDate('created_at', Carbon::today());
+    }
+
+    public function scopeForWeek(Builder $query): Builder
+    {
+        return $query->whereBetween('created_at', [
+            Carbon::now()->startOfWeek(),
+            Carbon::now()->endOfWeek(),
+        ]);
+    }
+
+    public function scopeForMonth(Builder $query): Builder
+    {
+        return $query
+            ->whereYear('created_at', Carbon::now()->year)
+            ->whereMonth('created_at', Carbon::now()->month);
     }
 }

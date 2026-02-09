@@ -7,25 +7,16 @@ use Illuminate\Http\Request;
 use App\Models\Ticket;
 use App\Enums\TicketStatus;
 use App\Http\Requests\TicketUpdateStatusRequest;
+use App\Services\TicketService;
 
 class TicketController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, TicketService $service)
     {
-        $tickets = Ticket::with('customer')
-            ->latest()
-            ->filter($request->only([
-                'status',
-                'date_from',
-                'date_to',
-                'email',
-                'phone',
-            ]))
-            ->paginate(10)
-            ->withQueryString();
-
         return view('admin.tickets.index', [
-            'tickets' => $tickets,
+            'tickets' => $service->paginateForAdmin(
+                $request->only(['status', 'date_from', 'date_to', 'email', 'phone'])
+            ),
             'statuses' => TicketStatus::cases(),
             'filters' => $request->all(),
         ]);
@@ -42,15 +33,13 @@ class TicketController extends Controller
         ]);
     }
 
-    public function updateStatus(TicketUpdateStatusRequest $request, Ticket $ticket)
+    public function updateStatus(TicketUpdateStatusRequest $request, Ticket $ticket, TicketService $ticketService) 
     {
-        $status = $request->validated('status');
-
-        $ticket->update([
-            'status' => $status,
-            'answered_at' => now(),
-        ]);
-
+        $ticketService->updateStatus(
+            $ticket,
+            $request->validated('status')
+        );
+    
         return redirect()
             ->route('admin.tickets.show', $ticket)
             ->with('success', 'Ticket status updated');
